@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\CentiroHomeAssignment",
+    "\\CentiroHomeAssignment\\App_Data",
+    "\\CentiroHomeAssignment\\Controllers",
+    "\\CentiroHomeAssignment\\Models",
+    "\\CentiroHomeAssignment\\ViewModels",
+    "\\CentiroHomeAssignment\\Views",
+    "\\CentiroHomeAssignment\\Views\\Home",
+    "\\CentiroHomeAssignment\\wwwroot\\css",
+    "\\CentiroHomeAssignment\\wwwroot\\js",
+    "\\CentiroHomeAssignment\\wwwroot\\lib"
+  ],
+  "SelectedNode": "\\CentiroHomeAssignment\\Models\\OrderContext.cs",
+  "PreviewInSolutionExplorer": false
+}
