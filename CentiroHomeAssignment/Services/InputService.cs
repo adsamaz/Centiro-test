@@ -12,49 +12,27 @@ using Microsoft.AspNetCore.Http;
 
 public class InputService
 {
-    public IEnumerable<OrderModel> ReadOrdersFromCsv()
+    public Tuple<OrderModel, List<ProductModel>> ReadOrderAndProductsFromCsv(string inputFile)
     {
-        // var fileName = @"<path to our CSV file>";
-        // var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
-        // {
-        //     Encoding = Encoding.UTF8, // Our file uses UTF-8 encoding.
-        //     Delimiter = "," // The delimiter is a comma.
-        // };
-
-        // using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-        // {
-        //     using (var textReader = new StreamReader(fs, Encoding.UTF8))
-        //     using (var csv = new CsvReader(textReader, configuration))
-        //     {
-        //         var data = csv.GetRecords<Person>();
-                
-        //         foreach (var person in data)
-        //         {
-        //             // Do something with values in each row
-        //         }
-        //     }
-        // }
-
         var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             Encoding = Encoding.UTF8, // Our file uses UTF-8 encoding.
-            Delimiter = "|" // The delimiter is a pipe.
+            Delimiter = "|", // The delimiter is a pipe.
         };
-        using (var reader = new StreamReader("App_Data/Order1.txt"))
-        {
-            var csv = new CsvReader(reader, configuration);
-            // csv.Context.RegisterClassMap<OrderMap>();
-            var orders = csv.GetRecords<OrderModel>().ToList();
-            // Do something with the orders
-            return orders;
-        }
-    }
-}
+        var reader = new StreamReader(inputFile);
+        var csv = new CsvReader(reader, configuration);
+        var order = csv.GetRecords<OrderModel>().ToList()[0];
 
-public class OrderMap : ClassMap<OrderModel>
-{
-    public OrderMap()
-    {
-        Map(m => m.Id).Name("OrderNumber");
+        reader = new StreamReader(inputFile);
+        csv = new CsvReader(reader, configuration);
+        var orderProducts = csv.GetRecords<OrderProductModel>().ToList();
+        order.OrderProducts = orderProducts;
+
+        reader = new StreamReader(inputFile);
+        csv = new CsvReader(reader, configuration);
+        var products = csv.GetRecords<ProductModel>().ToList();
+
+        return Tuple.Create(order, products);
+        
     }
 }

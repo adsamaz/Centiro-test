@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace CentiroHomeAssignment.Models
@@ -11,5 +9,6 @@ namespace CentiroHomeAssignment.Models
         {}
 
         public DbSet<OrderModel> Orders { get; set; } = null;
+        public DbSet<ProductModel> Products { get; set; } = null;
     }
 }

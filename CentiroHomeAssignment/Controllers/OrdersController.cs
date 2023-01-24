@@ -32,7 +32,7 @@ namespace CentiroHomeAssignment.Controllers
 
         // GET: api/orders/5 Returns a specific order using orderNumber
         [HttpGet("{orderNumber}")]
-        public async Task<ActionResult<OrderModel>> GetByOrderNumber(string orderNumber)
+        public async Task<ActionResult<OrderModel>> GetByOrderNumber(int orderNumber)
         {
             var order = await _orderService.GetByOrderNumber(orderNumber);
             if (order == null) return NotFound();
@@ -47,12 +47,12 @@ namespace CentiroHomeAssignment.Controllers
             try{
                 await _orderService.CreateNewOrder(order);
             }
-            catch{
-                return Problem("The 'Orders' data storage is null");
+            catch(Exception e){
+                throw e;
             }
 
             // Returns status "201 Created" 
-            return CreatedAtAction(nameof(GetByOrderNumber), new { Id = order.Id }, order);
+            return CreatedAtAction(nameof(GetByOrderNumber), new { OrderNumber = order.OrderNumber }, order);
         }
     }
 }

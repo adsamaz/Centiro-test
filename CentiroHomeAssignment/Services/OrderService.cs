@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CentiroHomeAssignment.Models;
@@ -16,10 +15,10 @@ public class OrderService
     public Task<List<OrderModel>> GetAllOrders()
     {
         if (_orderContext.Orders == null) return null;
-        return _orderContext.Orders?.ToListAsync();
+        return _orderContext.Orders.Include(order => order.OrderProducts).ToListAsync();
     }
 
-    public async Task<OrderModel> GetByOrderNumber(string orderNumber)
+    public async Task<OrderModel> GetByOrderNumber(int orderNumber)
     {
         if (_orderContext.Orders == null) return null;
         
@@ -31,9 +30,7 @@ public class OrderService
     }
 
     public async Task CreateNewOrder(OrderModel order)
-        {
-            if (_orderContext.Orders == null) throw new Exception("Orders storage does not exist");
-    
+        {    
             _orderContext.Orders.Add(order);
             await _orderContext.SaveChangesAsync();
         }
