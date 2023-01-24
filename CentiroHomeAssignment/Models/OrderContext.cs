@@ -1,14 +1,20 @@
 using Microsoft.EntityFrameworkCore;
 
+
 namespace CentiroHomeAssignment.Models
 {
-    public class OrderContext : DbContext
+    public interface IDbContext
+{
+    DbSet<T> Set<T>() where T : class;
+    int SaveChanges();
+}
+    public class OrderContext : DbContext, IDbContext
     {
         public OrderContext(DbContextOptions<OrderContext> options)
             : base(options)
         {}
 
-        public DbSet<OrderModel> Orders { get; set; } = null;
-        public DbSet<ProductModel> Products { get; set; } = null;
+        public virtual DbSet<OrderModel> Orders { get; set; } = null;
+        public virtual DbSet<ProductModel> Products { get; set; } = null;
     }
 }

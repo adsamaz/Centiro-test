@@ -22,7 +22,7 @@ public class OrderService
     {
         if (_orderContext.Orders == null) return null;
         
-        var order = await _orderContext.Orders.FindAsync(orderNumber);
+        var order = await _orderContext.Orders.Include(order => order.OrderProducts).FirstOrDefaultAsync(order => order.OrderNumber == orderNumber);
 
         if (order == null) return null;
 
@@ -30,8 +30,8 @@ public class OrderService
     }
 
     public async Task CreateNewOrder(OrderModel order)
-        {    
-            _orderContext.Orders.Add(order);
-            await _orderContext.SaveChangesAsync();
-        }
+    {    
+        _orderContext.Orders.Add(order);
+        await _orderContext.SaveChangesAsync();
+    }
 }

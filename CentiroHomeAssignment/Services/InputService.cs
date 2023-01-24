@@ -4,35 +4,37 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using CentiroHomeAssignment.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
-using Microsoft.AspNetCore.Http;
 
 public class InputService
 {
-    public Tuple<OrderModel, List<ProductModel>> ReadOrderAndProductsFromCsv(string inputFile)
+    public Tuple<OrderModel, List<ProductModel>> ReadOrderAndProductsFromFile(string inputFile, string fileType)
     {
-        var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            Encoding = Encoding.UTF8, // Our file uses UTF-8 encoding.
-            Delimiter = "|", // The delimiter is a pipe.
-        };
-        var reader = new StreamReader(inputFile);
-        var csv = new CsvReader(reader, configuration);
-        var order = csv.GetRecords<OrderModel>().ToList()[0];
+        if (fileType == "csv"){
+            var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Encoding = Encoding.UTF8, // Our file uses UTF-8 encoding.
+                Delimiter = "|", // The delimiter is a pipe.
+            };
 
-        reader = new StreamReader(inputFile);
-        csv = new CsvReader(reader, configuration);
-        var orderProducts = csv.GetRecords<OrderProductModel>().ToList();
-        order.OrderProducts = orderProducts;
+            var reader = new StreamReader(inputFile);
+            var csv = new CsvReader(reader, configuration);
+            var order = csv.GetRecords<OrderModel>().ToList()[0];
 
-        reader = new StreamReader(inputFile);
-        csv = new CsvReader(reader, configuration);
-        var products = csv.GetRecords<ProductModel>().ToList();
+            reader = new StreamReader(inputFile);
+            csv = new CsvReader(reader, configuration);
+            var orderProducts = csv.GetRecords<OrderProductModel>().ToList();
+            order.OrderProducts = orderProducts;
 
-        return Tuple.Create(order, products);
+            reader = new StreamReader(inputFile);
+            csv = new CsvReader(reader, configuration);
+            var products = csv.GetRecords<ProductModel>().ToList();
+
+            return Tuple.Create(order, products);
         
+        }
+        else throw new NotSupportedException("File type not supported");
     }
 }

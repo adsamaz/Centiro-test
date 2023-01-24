@@ -28,7 +28,7 @@ namespace CentiroHomeAssignment.Controllers
         {
             // Read csv files and insert the data to storage
             for(var i = 1; i <= 3; i++){
-                var orderAndProducts = _inputService.ReadOrderAndProductsFromCsv($"App_Data/Order{i}.txt");
+                var orderAndProducts = _inputService.ReadOrderAndProductsFromFile($"App_Data/Order{i}.txt", "csv");
                 try{
 
                     foreach(var product in orderAndProducts.Item2){
