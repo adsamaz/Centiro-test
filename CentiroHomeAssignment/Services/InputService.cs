@@ -10,7 +10,7 @@ using CsvHelper.Configuration;
 
 public class InputService
 {
-    public Tuple<OrderModel, List<ProductModel>> ReadOrderAndProductsFromFile(string inputFile, string fileType)
+    public (OrderModel, List<ProductModel>) ReadOrderAndProductsFromFile(string inputFile, string fileType)
     {
         if (fileType == "csv"){
             var configuration = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -32,7 +32,7 @@ public class InputService
             csv = new CsvReader(reader, configuration);
             var products = csv.GetRecords<ProductModel>().ToList();
 
-            return Tuple.Create(order, products);
+            return (order, products);
         
         }
         else throw new NotSupportedException("File type not supported");

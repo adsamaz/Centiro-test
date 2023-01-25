@@ -22,11 +22,16 @@ namespace CentiroHomeAssignment
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
             services.AddScoped<OrderService>();
             services.AddScoped<ProductService>();
+            services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IProductService, ProductService>();
             services.AddScoped<InputService>();
+
             services.AddDbContext<OrderContext>(opt =>
                 opt.UseInMemoryDatabase("OrderList"));
+                
             services.AddSwaggerGen();
             services.AddMvc();
         }

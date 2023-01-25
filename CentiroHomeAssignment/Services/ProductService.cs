@@ -4,7 +4,14 @@ using System.Threading.Tasks;
 using CentiroHomeAssignment.Models;
 using Microsoft.EntityFrameworkCore;
 
-public class ProductService
+public interface IProductService
+{
+    Task<List<ProductModel>> GetAllProducts();
+    Task<ProductModel> GetByProductNumber(string productNumber);
+    Task CreateNewProduct(ProductModel product);
+}
+
+public class ProductService : IProductService
 {
     private readonly OrderContext _orderContext;
 

@@ -47,8 +47,8 @@ namespace CentiroHomeAssignment.Controllers
             try{
                 await _orderService.CreateNewOrder(order);
             }
-            catch(Exception e){
-                throw e;
+            catch(ArgumentException e){
+                return BadRequest(e.Message);
             }
 
             // Returns status "201 Created" 

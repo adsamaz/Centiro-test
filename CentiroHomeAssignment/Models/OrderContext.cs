@@ -3,12 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CentiroHomeAssignment.Models
 {
-    public interface IDbContext
-{
-    DbSet<T> Set<T>() where T : class;
-    int SaveChanges();
-}
-    public class OrderContext : DbContext, IDbContext
+    public class OrderContext : DbContext
     {
         public OrderContext(DbContextOptions<OrderContext> options)
             : base(options)

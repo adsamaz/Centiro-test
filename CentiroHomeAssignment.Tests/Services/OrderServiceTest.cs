@@ -1,10 +1,12 @@
 using CentiroHomeAssignment.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CentiroHomeAssignment.Tests
+namespace CentiroHomeAssignment.Tests.Services
 {
     [TestClass]
     public class OrderServiceTest
@@ -12,6 +14,7 @@ namespace CentiroHomeAssignment.Tests
         [TestMethod]
         public async Task GetAllOrders_Returns_All_Orders()
         {
+            var productServiceMock = new Mock<IProductService>();
             var options = new DbContextOptionsBuilder<OrderContext>()
                 .UseInMemoryDatabase(databaseName: "OrderList")
                 .Options;
@@ -28,7 +31,7 @@ namespace CentiroHomeAssignment.Tests
             // Use a clean instance of the context to run the test
             using (var context = new OrderContext(options))
             {
-                OrderService orderService = new OrderService(context);
+                OrderService orderService = new OrderService(context, productServiceMock.Object);
                 List<OrderModel> orders = await orderService.GetAllOrders();
 
                 Assert.AreEqual(2, orders.Count);
@@ -45,6 +48,7 @@ namespace CentiroHomeAssignment.Tests
         [TestMethod]
         public async Task GetByOrderNumber_Returns_The_Order()
         {
+            var productServiceMock = new Mock<IProductService>();
             var options = new DbContextOptionsBuilder<OrderContext>()
                 .UseInMemoryDatabase(databaseName: "OrderList")
                 .Options;
@@ -61,7 +65,7 @@ namespace CentiroHomeAssignment.Tests
             // Use a clean instance of the context to run the test
             using (var context = new OrderContext(options))
             {
-                OrderService orderService = new OrderService(context);
+                OrderService orderService = new OrderService(context, productServiceMock.Object);
                 OrderModel order1 = await orderService.GetByOrderNumber(1);
 
                 Assert.AreEqual(new System.DateTime(2023, 01, 22), order1.OrderDate);
@@ -79,6 +83,9 @@ namespace CentiroHomeAssignment.Tests
         [TestMethod]
         public async Task CreateNewOrder_Creates_Order()
         {
+            var productServiceMock = new Mock<IProductService>();
+            productServiceMock.Setup(p => p.GetByProductNumber(It.IsAny<string>())).ReturnsAsync(new ProductModel{ProductNumber ="Prod123"});
+
             var options = new DbContextOptionsBuilder<OrderContext>()
                 .UseInMemoryDatabase(databaseName: "OrderList")
                 .Options;
@@ -91,7 +98,7 @@ namespace CentiroHomeAssignment.Tests
             
             using (var context = new OrderContext(options))
             {
-                OrderService orderService = new OrderService(context);
+                OrderService orderService = new OrderService(context, productServiceMock.Object);
                 await orderService.CreateNewOrder(order);
 
                 OrderModel createdOrder = context.Orders.Find(1);
@@ -99,6 +106,37 @@ namespace CentiroHomeAssignment.Tests
                 Assert.AreEqual("Customer1", createdOrder.CustomerName);
                 Assert.AreEqual(123, createdOrder.CustomerNumber);
                 Assert.AreEqual("Prod12345", createdOrder.OrderProducts[0].ProductNumber);
+
+                context.Orders.RemoveRange(context.Orders);
+                context.SaveChanges();
+            }
+        }
+
+        [TestMethod]
+        public async Task CreateNewOrder_Order_Does_Not_Validate()
+        {
+            var productServiceMock = new Mock<IProductService>();
+            productServiceMock.Setup(p => p.GetByProductNumber(It.IsAny<string>())).ReturnsAsync((ProductModel)null);
+
+            var options = new DbContextOptionsBuilder<OrderContext>()
+                .UseInMemoryDatabase(databaseName: "OrderList")
+                .Options;
+
+            OrderModel order = new OrderModel { 
+                OrderNumber = 1, OrderDate = new System.DateTime(2023, 01, 22), 
+                CustomerName = "Customer1", CustomerNumber = 123, 
+                OrderProducts = new List<OrderProductModel> { new OrderProductModel { ProductNumber = "Prod12345" } } 
+            };
+            
+            using (var context = new OrderContext(options))
+            {
+                OrderService orderService = new OrderService(context, productServiceMock.Object);
+                try{
+                    await orderService.CreateNewOrder(order);
+                    Assert.Fail("Expected Error");
+                }catch(ArgumentException){
+                    //Expected
+                }
 
                 context.Orders.RemoveRange(context.Orders);
                 context.SaveChanges();
